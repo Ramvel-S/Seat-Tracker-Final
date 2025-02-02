@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Booking</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        /* Background */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #eef2f3, #8e9eab);
+            color: #333;
+            padding: 20px;
+        }
+
+        /* Main Container */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* Heading */
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        /* Buttons */
+        button {
+            background-color: #6a11cb;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2575fc;
+        }
+
+        /* Custom Dropdown Styles */
+        .dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #6a11cb;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 100%;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dropdown-content label {
+            display: block;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .dropdown-content label:hover {
+            background-color: #f1f1f1;
+        }
+
+        .show-dropdown {
+            display: block;
+        }
+
+        .dropdown-button:after {
+            content: ' ▼';
+        }
+
+        .dropdown-button.open:after {
+            content: ' ▲';
+        }
+
+        /* Checkbox styles */
+        .checkbox {
+            margin-right: 10px;
+        }
+
+        footer {
+            background-color: #2c3e50; /* Dark Blue */
+            color: #ecf0f1; /* Light Gray */
+            padding: 40px 0;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin: 20px;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .footer-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: #3498db; /* Blue */
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #34495e; /* Slightly lighter border */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Solo Booking</h1>
+        <form id="teamBookingForm">
+            <!-- Client Selection -->
+            <div class="form-group">
+                <label for="client">Select Floor</label>
+                <select id="client" name="client" required>
+                    <option value="">-- Select Floor --</option>
+                    <option value="floor1">Floor 1</option>
+                    <option value="floor2">Floor 2</option>
+                    <option value="floor3">Floor 3</option>
+                </select>
+            </div>
+
+            <!-- Number of Members
+            <div class="form-group">
+                <label for="members">Number of Members</label>
+                <input type="number" id="members" name="members" min="1" required>
+            </div> -->
+
+            <!-- Multiple Day Selection -->
+            <div class="form-group">
+                <label for="days">Select Days of the Week</label>
+                <div class="dropdown">
+                    <button type="button" class="dropdown-button">Select Days</button>
+                    <div class="dropdown-content" id="daysDropdown">
+                        <label><input type="checkbox" class="checkbox" value="monday"> Monday</label>
+                        <label><input type="checkbox" class="checkbox" value="tuesday"> Tuesday</label>
+                        <label><input type="checkbox" class="checkbox" value="wednesday"> Wednesday</label>
+                        <label><input type="checkbox" class="checkbox" value="thursday"> Thursday</label>
+                        <label><input type="checkbox" class="checkbox" value="friday"> Friday</label>
+                        <label><input type="checkbox" class="checkbox" value="saturday"> Saturday</label>
+                        <label><input type="checkbox" class="checkbox" value="sunday"> Sunday</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start Time Selection -->
+            <div class="form-group">
+                <label for="start-time">Select Start Time</label>
+                <select id="start-time" name="start-time" required>
+                    <option value="">-- Select Start Time --</option>
+                    <!-- Time options from 9:00 AM to 5:00 PM -->
+                    <option value="9:00 AM">9:00 AM</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="4:00 PM">4:00 PM</option>
+                    <option value="5:00 PM">5:00 PM</option>
+                </select>
+            </div>
+
+            <!-- End Time Selection -->
+            <div class="form-group">
+                <label for="end-time">Select End Time</label>
+                <select id="end-time" name="end-time" required>
+                    <option value="">-- Select End Time --</option>
+                    <!-- End time options will be dynamically updated -->
+                </select>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit">Book Now</button>
+        </form>
+    </div>
+     
+
+    <script>
+        // Time options for both start and end times (9:00 AM to 5:00 PM)
+        const timeOptions = [
+            "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"
+        ];
+
+        const startTimeSelect = document.getElementById('start-time');
+        const endTimeSelect = document.getElementById('end-time');
+
+        // Function to populate the end time options
+        function updateEndTimeOptions() {
+            const selectedStartTime = startTimeSelect.value;
+            const selectedIndex = timeOptions.indexOf(selectedStartTime);
+            const availableEndTimes = timeOptions.slice(selectedIndex + 1);
+
+            // Clear existing options
+            endTimeSelect.innerHTML = '<option value="">-- Select End Time --</option>';
+
+            // Add new end time options
+            availableEndTimes.forEach(time => {
+                const option = document.createElement('option');
+                option.value = time;
+                option.textContent = time;
+                endTimeSelect.appendChild(option);
+            });
+        }
+
+        // Event listener to update end time options when start time is selected
+        startTimeSelect.addEventListener('change', updateEndTimeOptions);
+
+        // Initial call to update end time options on page load
+        updateEndTimeOptions();
+
+        // Toggle dropdown visibility for days selection
+        const dropdownButton = document.querySelector('.dropdown-button');
+        const dropdownContent = document.getElementById('daysDropdown');
+
+        dropdownButton.addEventListener('click', function() {
+            dropdownContent.classList.toggle('show-dropdown');
+            dropdownButton.classList.toggle('open');
+        });
+
+        // Form submission handler
+        document.getElementById("teamBookingForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            let floor = document.getElementById("client").value;
+        
+            // Collect selected days
+            let selectedDays = [];
+            document.querySelectorAll("#daysDropdown input:checked").forEach(checkbox => {
+                selectedDays.push(checkbox.value);
+            });
+        
+            let startTime = document.getElementById("start-time").value;
+            let endTime = document.getElementById("end-time").value;
+        
+            // Prepare data object
+            const bookingData = {
+                floor,
+                days: selectedDays,
+                startTime,
+                endTime
+            };
+        
+            try {
+                // Send data to the backend
+                const response = await fetch("http://localhost:5000/solo-book", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(bookingData)
+                });
+        
+                const result = await response.json();
+                if (response.ok) {
+                    alert(`Solo Booking successful! Booking ID: ${result.bookingId}`);
+                } else {
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error("Error submitting booking:", error);
+                alert("Failed to save booking. Please try again.");
+            }
+        });
+        
+    </script>
+
+</body>
+</html>

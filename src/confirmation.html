@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        /* Background Gradient */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #00e969, #01400d);
+            color: #333;
+            animation: fadeIn 1s ease-in-out;
+            padding: 20px;
+        }
+
+        /* Fade-in Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Main Container */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            width: 100%;
+            animation: slideUp 1s ease-in-out;
+        }
+
+        /* Slide-up Animation */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tick Animation */
+        .tick-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tick-circle {
+            width: 80px;
+            height: 80px;
+            background-color: #28a745;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            animation: tickBounce 0.8s ease-out;
+        }
+
+        .tick-icon {
+            font-size: 40px;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Tick Bounce Animation */
+        @keyframes tickBounce {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        /* Heading */
+        h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Booking Info */
+        .confirmation-info {
+            font-size: 18px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-info p {
+            margin-bottom: 10px;
+        }
+
+        /* Button */
+        button {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: none;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            background-color: #2c3e50; /* Dark Blue */
+            color: #ecf0f1; /* Light Gray */
+            padding: 40px 0;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin: 20px;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .footer-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: #3498db; /* Blue */
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #34495e; /* Slightly lighter border */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Tick Animation -->
+        <div class="tick-container">
+            <div class="tick-circle">
+                <span class="tick-icon">&#10003;</span>
+            </div>
+        </div>
+
+        <h1>Booking Confirmed!</h1>
+        
+        <!-- Booking Details -->
+        <div class="confirmation-info">
+            <p><strong>Floor:</strong> <span id="floor"></span></p>
+            <p><strong>Team Members:</strong> <span id="members"></span></p>
+            <p><strong>Days:</strong> <span id="days"></span></p>
+            <p><strong>Start Time:</strong> <span id="start-time"></span></p>
+            <p><strong>End Time:</strong> <span id="end-time"></span></p>
+        </div>
+
+        <!-- Button -->
+        <button onclick="window.location.href='/solo_or_team.html';">Back to Booking</button>
+    </div>
+
+    <script>
+        // Retrieve stored booking data from localStorage
+        document.addEventListener("DOMContentLoaded", function () {
+            const floor = localStorage.getItem("floor");
+            const members = localStorage.getItem("members");
+            const days = JSON.parse(localStorage.getItem("days")) || [];
+            const startTime = localStorage.getItem("startTime");
+            const endTime = localStorage.getItem("endTime");
+            const bookingType = localStorage.getItem("bookingType");
+    
+            // Check if the booking is solo or team
+            if (bookingType === "solo") {
+                document.getElementById("members").parentElement.style.display = "none";  // Hide members field
+            } else {
+                document.getElementById("members").textContent = members ? members : "N/A";
+            }
+    
+            function capitalizeFirstLetter(string) {
+    return string ? string.charAt(0).toUpperCase() + string.slice(1) : "N/A";
+}
+
+document.getElementById("floor").textContent = capitalizeFirstLetter(floor);
+document.getElementById("days").textContent = days.length ? days.map(capitalizeFirstLetter).join(", ") : "N/A";
+document.getElementById("start-time").textContent = capitalizeFirstLetter(startTime);
+document.getElementById("end-time").textContent = capitalizeFirstLetter(endTime);
+
+        });
+    </script>
+    
+    
+
+
+</body>
+</html>

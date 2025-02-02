@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | Office Seat Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* General Styles */
+        body, html {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: #333;
+            color: white;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        .nav-links a.bookings-btn {
+            background-color: #ff4500;
+        }
+
+        /* Dashboard Title */
+        .dashboard-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-container {
+            display: flex;
+            max-width: 1300px; /* Increased for better spacing */
+            margin: 30px auto;
+            gap: 30px; /* Increased gap */
+        }
+
+        /* Left Section */
+        .left-section {
+            flex: 1.5; /* Increased width */
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Profile Box */
+        .profile-box {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 2px solid #ddd;
+        }
+
+        .user-info {
+            width: 100%;
+        }
+
+        .user-info p {
+            margin: 8px 0;
+            font-size: 16px;
+            white-space: nowrap; /* Prevent email from wrapping */
+        }
+
+        .user-info strong {
+            display: inline-block;
+            width: 130px; /* Adjusted spacing */
+            font-weight: 600;
+        }
+
+        /* Bookings Section */
+        .booking-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-section h3 {
+            text-align: center; /* Centered heading */
+            font-size: 18px;
+        }
+
+        .booking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .booking-item:last-child {
+            border-bottom: none;
+        }
+
+        .cancel-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .cancel-btn:hover {
+            background: #b02a37;
+        }
+
+        /* Right Section (Graphs) */
+        .right-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .graph-container {
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        canvas {
+            width: 100%;
+            max-height: 300px;
+        }
+
+        footer {
+            background-color: #2c3e50; /* Dark Blue */
+            color: #ecf0f1; /* Light Gray */
+            padding: 40px 0;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin: 20px;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .footer-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: #3498db; /* Blue */
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #34495e; /* Slightly lighter border */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">Office Seat Manager</div>
+        <div class="nav-links">
+            <a href="./home.html">Home</a>
+            <a href="#" class="dashboard-btn">Dashboard</a>
+            <a href="./bookings.html" class="bookings-btn">Book a Seat</a>
+            <a href="#">Contact</a>
+        </div>
+    </div>
+
+    <!-- Dashboard Title -->
+    <div class="dashboard-title">Dashboard</div>
+
+    <!-- Dashboard Layout -->
+    <div class="dashboard-container">
+        <!-- Left Section -->
+        <div class="left-section">
+            <!-- User Profile -->
+            <div class="profile-box">
+                <img src="https://i.pravatar.cc/100" alt="User Profile" class="profile-pic">
+                <div class="user-info">
+                    <p><strong>Name:</strong> John Doe</p>
+                    <p><strong>Email:</strong> johndoe@example.com</p>
+                    <p><strong>Company:</strong> Tech Corp</p>
+                    <p><strong>Employee ID:</strong> TC-123456</p>
+                </div>
+            </div>
+
+            <!-- Bookings -->
+            <div class="booking-section">
+                <h3>Past & Current Bookings</h3>
+                <div id="bookingList">
+                    <p style="text-align:center; color:gray;">No bookings found.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section (Graphs) -->
+        <div class="right-section">
+            <!-- Booking Trends Chart -->
+            <div class="graph-container">
+                <h3>Booking Trends</h3>
+                <canvas id="bookingChart"></canvas>
+            </div>
+
+            <!-- Usage Analytics Chart -->
+            <div class="graph-container">
+                <h3>Usage Analytics</h3>
+                <canvas id="usageChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+     <!-- Footer Section -->
+     <footer class="footer">
+        <div class="footer-container">
+            <!-- Logo & Description -->
+            <div class="footer-section">
+                <h2 class="footer-logo">OSM</h2>
+                <p>Creating seamless workspace solutions for the modern office.</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="https://www.kbr.com/en">About Us</a></li>
+                    <li><a href="solo_or_team.html">Book Seat</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Copyright Section -->
+        <div class="footer-bottom">
+            <p>&copy; 2025 Your Brand. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        async function fetchBookings() {
+            try {
+                const response = await fetch('http://localhost:5000/user-bookings');
+                const bookings = await response.json();
+                const bookingList = document.getElementById('bookingList');
+
+                if (bookings.length === 0) {
+                    bookingList.innerHTML = `<p style="text-align:center; color:gray;">No bookings found.</p>`;
+                    return;
+                }
+
+                bookingList.innerHTML = bookings.map(booking => `
+                    <div class="booking-item">
+                        <div>
+                            <strong>${booking.room}</strong>
+                            <p>${booking.date} | ${booking.time}</p>
+                        </div>
+                        <button class="cancel-btn" onclick="cancelBooking(${booking.id})">Cancel</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error("Error fetching bookings:", error);
+            }
+        }
+
+        async function cancelBooking(bookingId) {
+            try {
+                await fetch(`http://localhost:5000/cancel-booking/${bookingId}`, { method: 'DELETE' });
+                fetchBookings();
+            } catch (error) {
+                console.error("Error canceling booking:", error);
+            }
+        }
+
+        function renderCharts() {
+            const ctx1 = document.getElementById('bookingChart').getContext('2d');
+            const ctx2 = document.getElementById('usageChart').getContext('2d');
+
+            new Chart(ctx1, {
+                type: 'bar',
+                data: { labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"], datasets: [{ label: 'Bookings Per Month', data: [5, 9, 13, 7, 11, 15], backgroundColor: '#007bff' }] }
+            });
+
+            new Chart(ctx2, {
+                type: 'line',
+                data: { labels: ["Week 1", "Week 2", "Week 3", "Week 4"], datasets: [{ label: 'Usage Over Time', data: [2, 5, 8, 4], borderColor: '#28a745', backgroundColor: 'rgba(40, 167, 69, 0.2)', fill: true }] }
+            });
+        }
+
+        fetchBookings();
+        renderCharts();
+    </script>
+</body>
+</html>

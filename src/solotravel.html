@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Floor Plan</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            
+            background-color: #f4f4f4;
+            position: relative;
+        }
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: #2c3e50; /* Dark Blue */
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ecf0f1; /* Light Gray */
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: 27rem;
+        }
+        
+        .nav-links a {
+            color: #ecf0f1; /* Light Gray */
+            text-decoration: none;
+            font-size: 18px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background-color: #3498db; /* Blue */
+            color: white;
+        }
+        .office-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background: white;
+            border: 2px solid #000;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+            gap: 10px;
+        }
+        .room {
+            position: absolute;
+            border: 2px solid black;
+            background: #e3e3e3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            padding: 10px;
+            text-align: center;
+        }
+        .table {
+            background: brown;
+            position: absolute;
+            border-radius: 10px;
+        }
+        .chair {
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .chair.occupied {
+            background: red; /* 🔴 Occupied */
+        }
+        .chair.available {
+            background: grey; /* ⚪ Available */
+        }
+        .chair.selected {
+            background: green; /* 🟢 Selected */
+        }
+        #submit-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #submit-btn:hover {
+            background: darkblue;
+        }
+
+        footer {
+            background-color: #2c3e50; /* Dark Blue */
+            color: #ecf0f1; /* Light Gray */
+            padding: 40px 0;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin: 20px;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .footer-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: #3498db; /* Blue */
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #34495e; /* Slightly lighter border */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="logo">Office Seat Manager</div>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="solo_or_team.html" class="bookings-btn">Book a Seat</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </div>
+    <div class="office-container">
+        <!-- Offices -->
+        <div class="room" style="top: 10px; left: 10px; width: 250px; height: 150px;">Office 1</div>
+        <div class="room" style="top: 10px; right: 10px; width: 250px; height: 150px;">Break Room</div>
+        <div class="room" style="bottom: 10px; left: 10px; width: 250px; height: 150px;">Office 2</div>
+        <div class="room" style="bottom: 10px; right: 10px; width: 250px; height: 150px;">Office 3</div>
+
+        <!-- Table 1 -->
+        <div class="table" id="table1" style="top: 100px; left: 350px; width: 120px; height: 60px;"></div>
+        <div class="chair available" data-chair-id="1" style="top: 115px; left: 325px;"></div>
+        <div class="chair available" data-chair-id="2" style="top: 78px; left: 400px;"></div>
+        <div class="chair available" data-chair-id="3" style="top: 160px; left: 400px;"></div>
+        <div class="chair available" data-chair-id="4" style="top: 115px; left: 470px;"></div>
+
+        <!-- Table 2 -->
+        <div class="table" id="table2" style="top: 250px; left: 200px; width: 140px; height: 70px;"></div>
+        <div class="chair available" data-chair-id="5" style="top: 230px; left: 220px;"></div>
+        <div class="chair available" data-chair-id="6" style="top: 228px; left: 300px;"></div>
+        <div class="chair available" data-chair-id="7" style="top: 315px; left: 220px;"></div>
+        <div class="chair available" data-chair-id="8" style="top: 318px; left: 300px;"></div>
+
+        <!-- Table 3 -->
+        <div class="table" id="table3" style="top: 250px; left: 450px; width: 160px; height: 80px;"></div>
+        <div class="chair available" data-chair-id="9" style="top: 230px; left: 480px;"></div>
+        <div class="chair available" data-chair-id="10" style="top: 230px; left: 560px;"></div>
+        <div class="chair available" data-chair-id="11" style="top: 325px; left: 480px;"></div>
+        <div class="chair available" data-chair-id="12" style="top: 325px; left: 560px;"></div>
+        <div class="chair available" data-chair-id="13" style="top: 280px; left: 425px;"></div>
+        <div class="chair available" data-chair-id="14" style="top: 280px; left: 610px;"></div>
+
+
+        <!-- Table 4 -->
+        <div class="table" id="table4" style="top: 425px; left: 345px; width: 80px; height: 170px;"></div>
+        <div class="chair available" data-chair-id="15" style="top: 400px; left: 375px;"></div>
+        <div class="chair available" data-chair-id="16" style="top: 450px; left: 425px;"></div>
+        <div class="chair available" data-chair-id="17" style="top: 550px; left: 425px;"></div>
+        <div class="chair available" data-chair-id="18" style="top: 550px; left: 320px;"></div>
+        <div class="chair available" data-chair-id="19" style="top: 450px; left: 320px;"></div>
+        <div class="chair available" data-chair-id="20" style="top: 595px; left: 368px;"></div>
+
+    </div>
+
+    <button id="submit-btn">Submit Selection</button>
+
+   
+
+    <script>
+        let selectedChairId = null;
+
+        // Fetch chair availability from the backend and update colors
+        async function loadChairs() {
+            try {
+                const response = await fetch('http://localhost:5000/chairs');
+                const chairsData = await response.json();
+
+                chairsData.forEach(chair => {
+                    const chairElement = document.querySelector(`[data-chair-id="${chair.chair_id}"]`);
+                    if (chairElement) {
+                        chairElement.classList.remove('occupied', 'available', 'selected');
+                        if (chair.is_occupied) {
+                            chairElement.classList.add('occupied'); // Red color for occupied
+                        } else {
+                            chairElement.classList.add('available'); // Grey color for available
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading chairs:', error);
+            }
+        }
+
+        // Handle chair selection
+        document.querySelectorAll('.chair').forEach(chair => {
+            chair.addEventListener('click', function () {
+                if (this.classList.contains('occupied')) return;
+
+                document.querySelectorAll('.chair').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedChairId = this.getAttribute('data-chair-id');
+            });
+        });
+
+        // Handle chair submission
+        document.getElementById('submit-btn').addEventListener('click', async function () {
+            if (!selectedChairId) {
+                alert('Please select a chair before submitting.');
+                return;
+            }
+
+            try {
+                await fetch('http://localhost:5000/select-chair', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: 1, chairId: selectedChairId })
+                });
+                loadChairs();
+                window.location.href = "confirmation.html";
+            } catch (error) {
+                console.error('Error selecting chair:', error);
+            }
+        });
+
+        loadChairs();
+    </script>
+</body>
+</html>

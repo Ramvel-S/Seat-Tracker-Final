@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Seat Manager - Booking Type</title>
+    <style>
+        /* Reset & Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Times New Roman", Times, serif;
+        }
+
+        /* Full Page Styling */
+        body {
+            background: linear-gradient(135deg, #f1f1f1, #d9d9d9);
+            color: #333;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            margin-top: 0.75rem;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: #2c3e50; /* Dark Blue */
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ecf0f1; /* Light Gray */
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: 27rem;
+        }
+        
+        .nav-links a {
+            color: #ecf0f1; /* Light Gray */
+            text-decoration: none;
+            font-size: 18px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background-color: #3498db; /* Blue */
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 100px 20px 50px;
+            background: url('./pic/sol_team.jpg') no-repeat center center/cover;
+            color: white;
+            position: relative;
+            margin-top: 0px;
+            height: 25rem;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 62px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 28px;
+            max-width: 670px;
+            margin: auto;
+        }
+
+        /* Booking Options */
+        .booking-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 60px 20px;
+        }
+
+        /* Card Styles */
+        .card {
+            width: 100vw;
+            height: 220px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Card Backgrounds */
+        .solo {
+            background-image: url("https://images.pexels.com/photos/3184328/pexels-photo-3184328.jpeg");
+            width: 50rem;
+            height: 25rem;
+        }
+
+        .team {
+            background-image: url("https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg");
+            width: 50rem;
+            height: 25rem;
+
+        }
+
+        /* Dark Overlay */
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            transition: background 0.3s ease-in-out;
+        }
+
+        /* Hover Effects */
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover::before {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Text Overlay */
+        .card span {
+            position: relative;
+            z-index: 2;
+        }
+
+        footer {
+            background-color: #2c3e50; /* Dark Blue */
+            color: #ecf0f1; /* Light Gray */
+            padding: 40px 0;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin: 20px;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .footer-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: #3498db; /* Blue */
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #34495e; /* Slightly lighter border */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar"> 
+        <div class="logo">Office Seat Manager</div>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="solo_or_team.html" class="bookings-btn">Book a Seat</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Choose Your Booking Type</h1>
+            <p>Book a seat for yourself or reserve space for your team. Get started in just a few clicks.</p>
+        </div>
+    </header>
+
+    <!-- Booking Selection -->
+    <section class="booking-container">
+        <a href="./solo_booking.html">
+            <div class="card solo" onclick="location.href='solo.html'">
+                <span>Solo Booking</span>
+            </div>
+        </a>
+        <a href="./team_booking.html">
+            <div class="card team" onclick="location.href='teaminfo.html'">
+                <span>Team Booking</span>
+            </div>
+        </a>
+        
+    </section>
+     
+
+</body>
+</html>

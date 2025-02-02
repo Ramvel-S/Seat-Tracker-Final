@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+    <h2>Scan QR Code</h2>
+    <div id="qr-reader" style="width: 300px;"></div>
+    <p id="qr-result">Waiting for scan...</p>
+
+    <script>
+        function onScanSuccess(qrCodeMessage) {
+            document.getElementById('qr-result').innerText = "Scanned: " + qrCodeMessage;
+
+            // Send to backend FastAPI
+            fetch("http://127.0.0.1:8000/check-seat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ qr_data: qrCodeMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.occupied) {
+                    alert("Seat is now occupied!");
+                } else {
+                    alert("Seat is available!");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Failed to check seat status.");
+            });
+        }
+
+        function onScanError(errorMessage) {
+            console.warn("Scan Error:", errorMessage);
+        }
+
+        let scanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
+        scanner.render(onScanSuccess, onScanError);
+    </script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seat Allocation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .confirmation {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: green;
+        }
+        .warning {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: red;
+        }
+        .seating-arrangement {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            border: 3px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .desk {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(2, 50px);
+            gap: 5px;
+            background: #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .seat {
+            width: 50px;
+            height: 50px;
+            background-color: #ccc;
+            text-align: center;
+            line-height: 50px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            position: relative;
+        }
+        .seat.selected {
+            background-color: #1e90ff;
+            color: white;
+        }
+        .seat.allocated {
+            background-color: #32cd32;
+            color: #32cd32;
+            cursor: not-allowed;
+        }
+        .desk-label {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .employee-id {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Seat Allocation</h1>
+            <p>Please fill in the details to allocate a seat.</p>
+        </div>
+
+        <!-- Employee Input Form -->
+        <div id="employeeInputs">
+            <!-- Employee input fields will be dynamically added -->
+        </div>
+
+        <button id="allocateSeatBtn">Allocate Seat</button>
+
+        <!-- Confirmation Message -->
+        <div class="confirmation" id="confirmationMessage" style="display: none;">
+            <p>Seats allocated successfully!</p>
+        </div>
+
+        <div class="warning" id="warningMessage" style="display: none;">
+            <p>Teams 1, 3, and 5 can only select the Morning Shift.</p>
+        </div>
+
+        <!-- Seating Arrangement -->
+        <div class="seating-arrangement" id="seatingArrangement">
+            <!-- Seats will be dynamically generated -->
+        </div>
+    </div>
+
+    <script>
+        const teamRestrictions = {
+            1: 'morning',  // Team 1: US can only choose morning
+            3: 'morning',  // Team 3: UK can only choose morning
+            5: 'morning'   // Team 5: US can only choose morning
+        };
+
+        // Function to generate the seating arrangement
+        function generateSeatsForShift(start, end) {
+            const seatingContainer = document.getElementById('seatingArrangement');
+            seatingContainer.innerHTML = '';  // Clear previous seats
+            const selectedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
+            
+            let deskCounter = 1;
+            for (let i = start; i <= end; i += 6) {
+                const desk = document.createElement('div');
+                desk.classList.add('desk');
+
+                const deskLabel = document.createElement('div');
+                deskLabel.classList.add('desk-label');
+                deskLabel.textContent = `Desk ${deskCounter}`;
+                deskCounter++;
+
+                for (let j = i; j < i + 6 && j <= end; j++) {
+                    const seat = document.createElement('div');
+                    seat.classList.add('seat');
+                    seat.textContent = j;
+                    seat.dataset.seatNumber = j;
+
+                    // Check if this seat is already allocated
+                    if (selectedSeats.includes(j.toString())) {
+                        seat.classList.add('allocated');
+                        const employeeId = localStorage.getItem(`seat${j}`);
+                        if (employeeId) {
+                            // Display the employee ID on the seat
+                            const employeeIdSpan = document.createElement('span');
+                            employeeIdSpan.classList.add('employee-id');
+                            employeeIdSpan.textContent = employeeId;
+                            seat.appendChild(employeeIdSpan);
+                        }
+                    }
+
+                    seat.addEventListener('click', () => {
+                        // Check if seat is already allocated
+                        if (!seat.classList.contains('allocated')) {
+                            seat.classList.toggle('selected');
+                            const isSelected = seat.classList.contains('selected');
+                            const selectedEmployeeId = prompt("Enter Employee ID for seat " + j);
+
+                            if (isSelected && selectedEmployeeId) {
+                                // Allocate the seat and display the Employee ID on the seat
+                                selectedSeats.push(j.toString());
+                                localStorage.setItem(`seat${j}`, selectedEmployeeId);
+                                localStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+
+                                // Display the employee ID on the seat
+                                const employeeIdSpan = document.createElement('span');
+                                employeeIdSpan.classList.add('employee-id');
+                                employeeIdSpan.textContent = selectedEmployeeId;
+                                seat.appendChild(employeeIdSpan);
+                            } else if (!isSelected) {
+                                // Remove the employee ID if deselected
+                                localStorage.removeItem(`seat${j}`);
+                                const existingEmployeeIdSpan = seat.querySelector('.employee-id');
+                                if (existingEmployeeIdSpan) {
+                                    existingEmployeeIdSpan.remove();
+                                }
+                                const index = selectedSeats.indexOf(j.toString());
+                                if (index !== -1) {
+                                    selectedSeats.splice(index, 1);
+                                    localStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+                                }
+                            }
+                        }
+                    });
+
+                    desk.appendChild(seat);
+                }
+
+                seatingContainer.appendChild(deskLabel);
+                seatingContainer.appendChild(desk);
+            }
+        }
+
+        // Populate employee input form based on selected seats
+        function populateEmployeeInputs() {
+            const selectedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
+            const employeeInputs = document.getElementById('employeeInputs');
+            employeeInputs.innerHTML = '';
+
+            selectedSeats.forEach((seat, index) => {
+                const div = document.createElement('div');
+                div.classList.add('form-group');
+
+                const label = document.createElement('label');
+                label.textContent = `Employee ID for Seat ${seat}:`;
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = `Enter employee ID for seat ${seat}`;
+                input.required = true;
+                input.pattern = '\\d{4}';
+                input.title = "Employee ID must be a 4-digit number";
+
+                const teamSelect = document.createElement('select');
+                teamSelect.classList.add('form-control');
+                teamSelect.required = true;
+                teamSelect.innerHTML = ` 
+                    <option value="">Select Team</option>
+                    <option value="1">Team 1 (US)</option>
+                    <option value="2">Team 2</option>
+                    <option value="3">Team 3 (UK)</option>
+                    <option value="4">Team 4</option>
+                    <option value="5">Team 5 (US)</option>
+                    <option value="6">Team 6</option>
+                    <option value="7">Team 7</option>
+                    <option value="8">Team 8</option>
+                    <option value="9">Team 9</option>
+                    <option value="10">Team 10</option>
+                `;
+
+                const shiftSelect = document.createElement('select');
+                shiftSelect.classList.add('form-control');
+                shiftSelect.required = true;
+                shiftSelect.innerHTML = `
+                    <option value="morning">Morning</option>
+                    <option value="afternoon">Afternoon</option>
+                    <option value="night">Night</option>
+                `;
+
+                // Restrict teams 1, 3, 5 to morning only
+                const team = parseInt(teamSelect.value);
+                if ([1, 3, 5].includes(team)) {
+                    shiftSelect.innerHTML = `<option value="morning">Morning</option>`;
+                }
+
+                div.appendChild(label);
+                div.appendChild(input);
+                div.appendChild(teamSelect);
+                div.appendChild(shiftSelect);
+
+                employeeInputs.appendChild(div);
+            });
+        }
+
+        // When allocate button is clicked, validate and save inputs
+        document.getElementById('allocateSeatBtn').addEventListener('click', () => {
+            const employeeInputs = document.getElementById('employeeInputs').children;
+            let valid = true;
+
+            for (let input of employeeInputs) {
+                const employeeIdInput = input.querySelector('input');
+                const teamSelect = input.querySelector('select');
+                const shiftSelect = input.querySelectorAll('select')[1];
+                if (!employeeIdInput.value || !teamSelect.value || !shiftSelect.value) {
+                    valid = false;
+                    break;
+                }
+                const team = parseInt(teamSelect.value);
+                const shift = shiftSelect.value;
+
+                if ((team === 1 || team === 3 || team === 5) && (shift === 'afternoon' || shift === 'night')) {
+                    valid = false;
+                    document.getElementById('warningMessage').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('warningMessage').style.display = 'none';
+                    }, 3000);
+                    break;
+                }
+                localStorage.setItem(`seat${employeeIdInput.value}`, employeeIdInput.value);
+            }
+
+            if (valid) {
+                document.getElementById('confirmationMessage').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('confirmationMessage').style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // On page load, generate seating and populate inputs
+        window.onload = () => {
+            generateSeatsForShift(1, 1000); // Generate seat grid on page load
+            populateEmployeeInputs(); // Populate employee input fields
+        };
+    </script>
+
+</body>
+</html>

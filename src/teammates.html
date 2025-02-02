@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Selection</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .wrapper {
+            display: flex;
+            width: 800px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .selected-container, .member-container {
+            width: 50%;
+            padding: 20px;
+        }
+
+        .selected-container {
+            border-right: 1px solid #ddd;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .member-list {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fff;
+        }
+
+        .member-item, .selected-member-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            justify-content: space-between;
+        }
+
+        .selected-member-item {
+            background: #f3f3f3;
+            border-radius: 6px;
+        }
+
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        .member-info strong {
+            font-size: 16px;
+        }
+
+        .member-info span {
+            color: #666;
+            font-size: 13px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .confirm-btn {
+            background: #6200ea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .confirm-btn:hover {
+            background: #4300b5;
+        }
+
+        
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <!-- Selected Members (Left) -->
+        <div class="selected-container">
+            <h2>Selected Members</h2>
+            <div class="member-list" id="selectedMemberList">
+                <p style="color: gray; text-align: center;">No members selected</p>
+            </div>
+        </div>
+
+        <!-- Available Members (Right) -->
+        <div class="member-container">
+            <h2>Members</h2>
+            <input type="text" class="search-box" id="searchBox" placeholder="Search by name or email" onkeyup="filterMembers()">
+            <div class="member-list" id="memberList"></div>
+
+            <div class="footer">
+                <p id="selectedCount">0 member(s) selected</p>
+                <a href="./confirmation.html">
+                    <button class="confirm-btn" onclick="confirmSelection()">Confirm</button>
+                </a>
+            </div>
+        </div>
+    </div>
+     
+
+    <script>
+        let selectedMembers = [];
+
+        async function fetchMembers() {
+            try {
+                const response = await fetch('http://localhost:5000/members');
+                const members = await response.json();
+                const memberList = document.getElementById('memberList');
+
+                memberList.innerHTML = '';
+                members.forEach(member => {
+                    const div = document.createElement('div');
+                    div.classList.add('member-item');
+                    div.innerHTML = `
+                        <div class="member-info">
+                            <strong>${member.name}</strong>
+                            <span>${member.email}</span>
+                        </div>
+                        <input type="checkbox" id="member-${member.id}" value="${member.email}" onchange="toggleSelection(${member.id}, '${member.name}', '${member.email}')">
+                    `;
+                    memberList.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Error fetching members:", error);
+            }
+        }
+
+        function toggleSelection(id, name, email) {
+            const index = selectedMembers.findIndex(member => member.id === id);
+            if (index === -1) {
+                selectedMembers.push({ id, name, email });
+            } else {
+                selectedMembers.splice(index, 1);
+            }
+
+            updateSelectedMembersUI();
+        }
+
+        function updateSelectedMembersUI() {
+            const selectedList = document.getElementById('selectedMemberList');
+            selectedList.innerHTML = '';
+
+            if (selectedMembers.length === 0) {
+                selectedList.innerHTML = `<p style="color: gray; text-align: center;">No members selected</p>`;
+            } else {
+                selectedMembers.forEach(member => {
+                    const div = document.createElement('div');
+                    div.classList.add('selected-member-item');
+                    div.innerHTML = `
+                        <div class="member-info">
+                            <strong>${member.name}</strong>
+                            <span>${member.email}</span>
+                        </div>
+                        <button style="background: none; border: none; color: red; cursor: pointer;" onclick="removeMember(${member.id})">✖</button>
+                    `;
+                    selectedList.appendChild(div);
+                });
+            }
+
+            document.getElementById('selectedCount').innerText = `${selectedMembers.length} member(s) selected`;
+        }
+
+        function removeMember(id) {
+            selectedMembers = selectedMembers.filter(member => member.id !== id);
+            updateSelectedMembersUI();
+        }
+
+        async function confirmSelection() {
+            if (selectedMembers.length === 0) {
+                alert("Please select at least one member!");
+                return;
+            }
+
+            try {
+                await fetch('http://localhost:5000/confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ members: selectedMembers })
+                });
+                alert("Selection confirmed!");
+            } catch (error) {
+                console.error("Error confirming selection:", error);
+            }
+        }
+
+        function filterMembers() {
+            const searchValue = document.getElementById("searchBox").value.toLowerCase();
+            document.querySelectorAll('.member-item').forEach(item => {
+                const name = item.innerText.toLowerCase();
+                item.style.display = name.includes(searchValue) ? "flex" : "none";
+            });
+        }
+
+        fetchMembers();
+    </script>
+</body>
+
+</html>
