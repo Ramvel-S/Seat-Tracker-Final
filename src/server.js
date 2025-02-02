@@ -251,12 +251,12 @@ app.post("/allocate-table", (req, res) => {
     const { floor, members } = req.body;
 
     if (!floor || !members) {
-        return res.status(400).json({ error: "Floor and members required" });
+        return res.status(400).json({ error: "Floor and members are required" });
     }
 
     // Step 1: Find an available table on the given floor
     const findTableQuery = `
-        SELECT table_id, remaining_seats FROM tables
+        SELECT table_id, remaining_seats, capacity FROM tables
         WHERE floor = ? AND remaining_seats >= ? AND occupied = 0
         ORDER BY remaining_seats ASC LIMIT 1
     `;
@@ -268,13 +268,15 @@ app.post("/allocate-table", (req, res) => {
         }
 
         if (tables.length === 0) {
-            return res.status(400).json({ error: "⚠️ No available tables found!" });
+            return res.status(404).json({ error: "⚠️ No available tables found!" });
         }
 
         // Step 2: Select the table with the best capacity fit
         const selectedTable = tables[0];
         const tableId = selectedTable.table_id;
-        const newRemainingSeats = selectedTable.remaining_seats - members;
+        let newRemainingSeats = selectedTable.remaining_seats - members;
+
+        // If remaining seats reach 0, mark table as occupied
         const isTableFull = newRemainingSeats === 0 ? 1 : 0;
 
         // Step 3: Update the table occupancy
@@ -293,6 +295,7 @@ app.post("/allocate-table", (req, res) => {
         });
     });
 });
+
 
 // ✅ API to Handle Conference Room Allocation (room_selection.html)
 app.post("/allocate-conference-room", (req, res) => {
@@ -392,6 +395,88 @@ app.get("/api/booking", (req, res) => {
         }
 
         res.json(results[0]); // Send the latest booking data
+    });
+});
+
+app.get("/api/users", (req, res) => {
+    db.query("SELECT id, name, email FROM users", (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+// Delete User
+app.delete("/api/users/:id", (req, res) => {
+    db.query("DELETE FROM users WHERE id = ?", [req.params.id], err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "User deleted successfully" });
+    });
+});
+
+// Add User
+app.post("/api/users", async (req, res) => {
+    const { name, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    db.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hashedPassword], err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "User added successfully" });
+    });
+});
+
+// Get Tables
+app.get("/api/tables", (req, res) => {
+    db.query("SELECT * FROM tables", (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+app.put("/api/tables/reset/:tableId", (req, res) => {
+    const { tableId } = req.params;
+
+    const query = "UPDATE tables SET remaining_seats = capacity, occupied = 0 WHERE table_id = ?";
+    db.query(query, [tableId], (err, result) => {
+        if (err) {
+            console.error("❌ Database error:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Table not found" });
+        }
+
+        res.json({ message: `✅ Table ${tableId} reset successfully` });
+    });
+});
+
+// ✅ API to Handle Team Booking (team_booking.html)
+app.post("/book/team", (req, res) => {
+    const { floor, members, days, startTime, endTime } = req.body;
+
+    if (!floor || !members || !days || !startTime || !endTime) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Validate members array
+    if (!Array.isArray(members) || members.length === 0) {
+        return res.status(400).json({ error: "Members array is required and should not be empty" });
+    }
+
+    // Convert time format
+    const formattedStartTime = convertTo24HourFormat(startTime);
+    const formattedEndTime = convertTo24HourFormat(endTime);
+
+    const query = `
+        INSERT INTO team_bookings (floor, members, days, start_time, end_time, created_at) 
+        VALUES (?, ?, ?, ?, ?, NOW())
+    `;
+
+    db.query(query, [floor, JSON.stringify(members), days.join(", "), formattedStartTime, formattedEndTime], (err, result) => {
+        if (err) {
+            console.error("❌ Database error:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json({ message: "✅ Booking successful", bookingId: result.insertId });
     });
 });
 

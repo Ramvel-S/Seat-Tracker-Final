@@ -16,8 +16,10 @@
         }
 
         body {
-            background: #f4f4f4;
+            background: rgb(2,0,36);
+            background: linear-gradient(90deg, rgb(242, 242, 242) 0%, rgba(0,212,255,1) 100%);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
@@ -32,6 +34,7 @@
             overflow: hidden;
             background: #fff;
             position: relative;
+            margin-top: 5rem;
             transition: transform 0.5s ease-in-out;
         }
 
@@ -178,11 +181,14 @@
 
 <body>
 
+    <h1>WELCOME TO OFFICE MANAGEMENT SYSTEM</h1>
     <div class="container">
         <div class="left-panel">
             <h1>Welcome Back!</h1>
             <p>Switch between Sign-Up and Sign-In effortlessly.</p>
-            <button id="toggleForm" class="toggle-btn">Switch to Sign-In</button>
+            <button id="toggleForm" class="toggle-btn">Sign-In as Admin</button>
+            <button id="toggleForm" class="toggle-btn">Switch to Sign-In </button>
+
         </div>
 
         <div class="form-container" id="signupForm">
@@ -198,8 +204,11 @@
             <h1>Welcome Back!</h1>
             <input type="email" id="signinEmail" placeholder="Work Email" required>
             <input type="password" id="signinPassword" placeholder="Enter Your Password" required>
-            <button id="signinBtn">Access Your Desk</button>
+            <a href="./admin.html">
+                <button id="signinBtn">Access Your Desk</button>
+            </a>
         </div>
+        
     </div>
 
     <script>
@@ -251,7 +260,7 @@
 
                 const result = await response.json();
                 alert(result.message);
-                if (response.ok) window.location.href = '/dashboard';
+                if (response.ok) window.location.href = '/src/admin.html';
             } catch (error) {
                 alert("Server error, try again later.");
             }

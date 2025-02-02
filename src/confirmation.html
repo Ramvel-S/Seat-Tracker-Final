@@ -39,7 +39,7 @@
             border-radius: 15px;
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             animation: slideUp 1s ease-in-out;
         }
@@ -198,10 +198,15 @@
         </div>
 
         <!-- Button -->
-        <button onclick="window.location.href='/solo_or_team.html';">Back to Booking</button>
+        <button onclick="redirectToBooking()">Back to Booking</button>
     </div>
 
     <script>
+        function redirectToBooking() {
+        console.log("Redirecting to solo_or_team.html...");
+        window.location.href = "solo_or_team.html";
+        }
+
         // Retrieve stored booking data from localStorage
         document.addEventListener("DOMContentLoaded", function () {
             const floor = localStorage.getItem("floor");

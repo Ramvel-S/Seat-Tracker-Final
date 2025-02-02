@@ -5,12 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+       body{
+        background: rgb(2,0,36);
+background: linear-gradient(90deg, rgb(174, 170, 207) 0%, rgb(95, 181, 198) 100%);
+       }
+
+.qrs {
+    display: flex;
+    flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+}
+/* Navigation Bar */
+.navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: #2c3e50; /* Dark Blue */
+            height: 3rem;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ecf0f1; /* Light Gray */
+        }
+        
+    </style>
 </head>
 <body>
-    <h2>Scan QR Code</h2>
-    <div id="qr-reader" style="width: 300px;"></div>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="logo">Office Seat Manager</div>
+        
+    </div>
+<div class="qrs">
+    <h2>Scan QR Code for seat availability status</h2>
+    <div id="qr-reader" style="width: 500px;"></div>
     <p id="qr-result">Waiting for scan...</p>
-
+</div>
     <script>
         function onScanSuccess(qrCodeMessage) {
             document.getElementById('qr-result').innerText = "Scanned: " + qrCodeMessage;
