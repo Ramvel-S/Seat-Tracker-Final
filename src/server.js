@@ -55,6 +55,60 @@ app.get('/members', (req, res) => {
     });
 });
 
+app.get("/api/users", (req, res) => {
+    db.query("SELECT id, name, email FROM users", (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+// Delete User
+app.delete("/api/users/:id", (req, res) => {
+    db.query("DELETE FROM users WHERE id = ?", [req.params.id], err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "User deleted successfully" });
+    });
+});
+
+// Add User
+app.post("/api/users", async (req, res) => {
+    const { name, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    db.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hashedPassword], err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "User added successfully" });
+    });
+});
+
+// Get Tables
+app.get("/api/tables", (req, res) => {
+    db.query("SELECT * FROM tables", (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+app.put("/api/tables/reset/:tableId", (req, res) => {
+    const { tableId } = req.params;
+
+    const query = "UPDATE tables SET remaining_seats = capacity, occupied = 0 WHERE table_id = ?";
+    db.query(query, [tableId], (err, result) => {
+        if (err) {
+            console.error("❌ Database error:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Table not found" });
+        }
+
+        res.json({ message: `✅ Table ${tableId} reset successfully` });
+    });
+});
+
+
+
+
 
 app.post('/select-chair', (req, res) => {
     const { userId, chairId } = req.body;
