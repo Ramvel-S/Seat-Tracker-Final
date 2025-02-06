@@ -106,9 +106,22 @@ app.put("/api/tables/reset/:tableId", (req, res) => {
     });
 });
 
+app.post('/signup', async (req, res) => {
+    const { name, email, password, phone_no } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
 
+    db.query("INSERT INTO users (name, email, password, phone_no) VALUES (?, ?, ?, ?)", 
+        [name, email, hashedPassword, phone_no], 
+        (err) => {
+            if (err) return res.status(500).json({ message: "Error: " + err });
+            res.json({ message: "User registered successfully!" });
+        }
+    );
+});
 
-
+app.post('/signin', async (req, res) => {
+    res.json({ message: "Login successful!", redirectUrl: "/dashboard" });
+});
 
 app.post('/select-chair', (req, res) => {
     const { userId, chairId } = req.body;
