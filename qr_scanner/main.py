@@ -2,6 +2,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import mysql.connector
 from pydantic import BaseModel
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -16,11 +20,11 @@ app.add_middleware(
 
 # Database Connection
 conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="Codeath@123",
-    database="seat_tracker",
-    port=3306  # MySQL default port
+    host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME"),
+    port=int(os.getenv("DB_PORT"))  # Convert to integer
 )
 cursor = conn.cursor()
 
