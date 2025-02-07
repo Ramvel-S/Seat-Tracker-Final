@@ -16,7 +16,6 @@
         }
 
         body {
-            background: rgb(2,0,36);
             background: linear-gradient(90deg, rgb(242, 242, 242) 0%, rgba(0,212,255,1) 100%);
             display: flex;
             flex-direction: column;
@@ -57,8 +56,6 @@
             justify-content: center;
             padding: 40px;
             text-align: center;
-            border-top-left-radius: 20px;
-            border-bottom-left-radius: 20px;
         }
 
         h1 {
@@ -118,77 +115,17 @@
         .hidden {
             display: none;
         }
-
-        footer {
-            background-color: #2c3e50; /* Dark Blue */
-            color: #ecf0f1; /* Light Gray */
-            padding: 40px 0;
-        }
-
-        .footer-container {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            max-width: 1200px;
-            margin: auto;
-            padding: 0 20px;
-        }
-
-        .footer-section {
-            flex: 1;
-            min-width: 250px;
-            margin: 20px;
-        }
-
-        .footer-logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #ecf0f1;
-        }
-
-        .footer-section h3 {
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-        .footer-section ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 8px;
-        }
-
-        .footer-section ul li a {
-            color: #ecf0f1;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-section ul li a:hover {
-            color: #3498db; /* Blue */
-        }
-
-        .footer-bottom {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #34495e; /* Slightly lighter border */
-        }
     </style>
 </head>
-
-<body>
-
+<<body>
     <h1>WELCOME TO OFFICE MANAGEMENT SYSTEM</h1>
     <div class="container">
         <div class="left-panel">
             <h1>Welcome Back!</h1>
             <p>Switch between Sign-Up and Sign-In effortlessly.</p>
-            <button id="toggleForm" class="toggle-btn">Sign-In as Admin</button>
-            <button id="toggleForm" class="toggle-btn">Switch to Sign-In </button>
-
+            <button class="toggle-btn" data-toggle="signin">Log-In</button>
+            <button class="toggle-btn" data-toggle="signup">Switch to Sign-In</button>
+            <button class="toggle-btn" data-toggle="admin">Log in as Admin</button>
         </div>
 
         <div class="form-container" id="signupForm">
@@ -204,68 +141,105 @@
             <h1>Welcome Back!</h1>
             <input type="email" id="signinEmail" placeholder="Work Email" required>
             <input type="password" id="signinPassword" placeholder="Enter Your Password" required>
-            <a href="./admin.html">
-                <button id="signinBtn">Access Your Desk</button>
-            </a>
+            <button id="signinBtn">Access Your Desk</button>
         </div>
-        
+
+        <!-- Admin Login Form -->
+        <div class="form-container hidden" id="adminLoginForm">
+            <h1>Admin Portal</h1>
+            <input type="email" id="adminEmail" placeholder="Admin Email" required>
+            <input type="password" id="adminPassword" placeholder="Admin Password" required>
+            <button id="adminLoginBtn">Login as Admin</button>
+        </div>
     </div>
 
     <script>
-        document.getElementById('toggleForm').addEventListener('click', function () {
-            document.getElementById('signupForm').classList.toggle('hidden');
-            document.getElementById('signinForm').classList.toggle('hidden');
-            this.textContent = this.textContent.includes("Sign-In") ? "Switch to Sign-Up" : "Switch to Sign-In";
+        document.querySelectorAll('.toggle-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const signupForm = document.getElementById('signupForm');
+                const signinForm = document.getElementById('signinForm');
+                const adminForm = document.getElementById('adminLoginForm');
+
+                if (this.getAttribute('data-toggle') === 'signin') {
+                    signupForm.classList.add('hidden');
+                    signinForm.classList.remove('hidden');
+                    adminForm.classList.add('hidden');
+                } else if (this.getAttribute('data-toggle') === 'signup') {
+                    signupForm.classList.remove('hidden');
+                    signinForm.classList.add('hidden');
+                    adminForm.classList.add('hidden');
+                } else if (this.getAttribute('data-toggle') === 'admin') {
+                    signupForm.classList.add('hidden');
+                    signinForm.classList.add('hidden');
+                    adminForm.classList.remove('hidden');
+                }
+            });
         });
 
+        // Admin Login
+        document.getElementById('adminLoginBtn').addEventListener('click', async (event) => {
+            event.preventDefault();
+            const data = {
+                email: document.getElementById("adminEmail").value,
+                password: document.getElementById("adminPassword").value,
+            };
+            try {
+                const response = await fetch('http://localhost:5000/admin-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const result = await response.json();
+                alert(result.message);
+                if (response.ok) window.location.href = 'admin.html';
+            } catch (error) {
+                alert("Invalid admin credentials or server error.");
+            }
+        });
+
+        // User Sign-Up
         document.getElementById('signupBtn').addEventListener('click', async (event) => {
             event.preventDefault();
-
             const data = {
                 name: document.getElementById("signupName").value,
                 email: document.getElementById("signupEmail").value,
                 password: document.getElementById("signupPassword").value,
                 phone_no: document.getElementById("signupPhone").value,
             };
-
             try {
                 const response = await fetch('http://localhost:5000/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data),
                 });
-
                 const result = await response.json();
                 alert(result.message);
-                if (response.ok) window.location.href = 'Home.html';
+                if (response.ok) window.location.href = 'login.html';
             } catch (error) {
                 alert("Server error, try again later.");
             }
         });
 
+        // User Sign-In
         document.getElementById('signinBtn').addEventListener('click', async (event) => {
             event.preventDefault();
-
             const data = {
                 email: document.getElementById("signinEmail").value,
                 password: document.getElementById("signinPassword").value,
             };
-
             try {
                 const response = await fetch('http://localhost:5000/signin', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data),
                 });
-
                 const result = await response.json();
                 alert(result.message);
-                if (response.ok) window.location.href = '/src/admin.html';
+                if (response.ok) window.location.href = 'home.html';
             } catch (error) {
-                alert("Server error, try again later.");
+                alert("Invalid credentials or server error.");
             }
         });
     </script>
-
 </body>
 </html>

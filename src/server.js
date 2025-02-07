@@ -106,21 +106,45 @@ app.put("/api/tables/reset/:tableId", (req, res) => {
     });
 });
 
-app.post('/signup', async (req, res) => {
+app.post('/signup', (req, res) => {
     const { name, email, password, phone_no } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    db.query("INSERT INTO users (name, email, password, phone_no) VALUES (?, ?, ?, ?)", 
-        [name, email, hashedPassword, phone_no], 
-        (err) => {
-            if (err) return res.status(500).json({ message: "Error: " + err });
-            res.json({ message: "User registered successfully!" });
+    const sql = "INSERT INTO users (name, email, password, phone_no) VALUES (?, ?, ?, ?)";
+    db.query(sql, [name, email, password, phone_no], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Signup failed. Email might be taken." });
         }
-    );
+        res.status(200).json({ message: "Signup successful!" });
+    });
 });
 
-app.post('/signin', async (req, res) => {
-    res.json({ message: "Login successful!", redirectUrl: "/dashboard" });
+app.post('/signin', (req, res) => {
+    const { email, password } = req.body;
+    const sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+    db.query(sql, [email, password], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Server error. Try again later." });
+        }
+        if (result.length > 0) {
+            res.status(200).json({ message: "Login successful!" });
+        } else {
+            res.status(401).json({ message: "Invalid email or password." });
+        }
+    });
+});
+
+app.post('/admin-login', (req, res) => {
+    const { email, password } = req.body;
+    const sql = "SELECT * FROM admins WHERE email = ? AND password = ?";
+    db.query(sql, [email, password], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Server error. Try again later." });
+        }
+        if (result.length > 0) {
+            res.status(200).json({ message: "Admin login successful!" });
+        } else {
+            res.status(401).json({ message: "Invalid admin credentials." });
+        }
+    });
 });
 
 app.post('/select-chair', (req, res) => {
